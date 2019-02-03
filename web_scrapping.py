@@ -27,6 +27,6 @@ def log_error(e):
 def write_html(raw_html):
     f = open("page.html", "w+", encoding="utf-8")
     html = BeautifulSoup(raw_html, 'html.parser')
-    f.write(str(html.encode("utf-8")))
+    f.write(html.__unicode__())
     f.close()
 
