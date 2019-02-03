@@ -1,6 +1,7 @@
 from requests import get
 from requests.exceptions import RequestException
 from bs4 import BeautifulSoup
+import csv
 
 def simple_get(url):
     # Attemps to get the content at 'url' by making an HTTP GET request.
@@ -26,7 +27,24 @@ def log_error(e):
 
 def write_html(raw_html):
     f = open("page.html", "w+", encoding="utf-8")
-    html = BeautifulSoup(raw_html, 'html.parser')
+    try:
+        html = BeautifulSoup(raw_html, 'html.parser')
+    except:
+        html = BeautifulSoup("404 Not Found!", 'html.parser')
     f.write(html.__unicode__())
     f.close()
+
+def read_html(raw_html):
+    try:
+        html = BeautifulSoup(raw_html, 'html.parser')
+    except:
+        html = BeautifulSoup("404 Not Found!", 'html.parser')
+    return html.__unicode__()
+
+def add_to_csv(year, title, description, rating, cast):
+    f = open('data.csv', 'a')
+    row_data = [year, title, description, rating, cast]
+    writer = csv.writer(f)
+    f.write('\n')
+    writer.writerow(row_data)
 
