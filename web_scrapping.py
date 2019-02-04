@@ -25,8 +25,8 @@ def log_error(e):
     # This function prints log errors
     print(e)
 
-def write_html(raw_html):
-    f = open("page.html", "w+", encoding="utf-8")
+def write_html(raw_html, filename):
+    f = open(filename, "w+", encoding="utf-8")
     try:
         html = BeautifulSoup(raw_html, 'html.parser')
     except:
@@ -39,12 +39,13 @@ def read_html(raw_html):
         html = BeautifulSoup(raw_html, 'html.parser')
     except:
         html = BeautifulSoup("404 Not Found!", 'html.parser')
-    return html.__unicode__()
+    return html#.__unicode__()
 
-def add_to_csv(year, title, description, rating, cast):
+def add_to_csv(year, title, link):
     f = open('data.csv', 'a')
-    row_data = [year, title, description, rating, cast]
+    row_data = [year, title, link]
     writer = csv.writer(f)
     f.write('\n')
     writer.writerow(row_data)
+    f.close()
 

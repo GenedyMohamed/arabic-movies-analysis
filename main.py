@@ -1,10 +1,42 @@
 from web_scrapping import simple_get, write_html, read_html, add_to_csv
+import unicodedata as ud
 
-raw_html = simple_get('https://www.elcinema.com/index/work/release_year/1979?page=10')
-write_html(raw_html)
+#Check if word is in Latin alphabet or not.
+latin_letters= {}
+def is_latin(uchr):
+    try: return latin_letters[uchr]
+    except KeyError:
+         return latin_letters.setdefault(uchr, 'LATIN' in ud.name(uchr))
+def only_roman_chars(unistr):
+    return all(is_latin(uchr)
+           for uchr in unistr
+           if uchr.isalpha())
 
-# loop on all html
-for line in read_html(raw_html):
-    # get info per movie and add to csv
-    add_to_csv('1940', 'test_title', 'test_description', '6.2', '["mervat amin", "farid el atrash"]')
+
+
+for i in range(1, 100):
+    raw_html = simple_get("https://www.elcinema.com/index/work/release_year/1979?page={}".format(i))
+    print(i)
+    if(raw_html is None):
+        break
+    #write_html(raw_html, 'page.html')
     
+    html = read_html(raw_html)
+    flag = False
+    for td in html.select("td"):
+        a_tags = td.findAll("a", recursive=False)
+        for a in a_tags:
+            if(a.find("img") and td.parent.find("td", string="فيلم")):
+                movie = a.parent.findAll("a", recursive=False)[-1]
+                movie_name = movie.text
+                if(not only_roman_chars(movie_name)):
+                    movie_link = movie['href']
+                    print(movie_name)
+                    print(movie_link)
+                    #add_to_csv('1979', movie_name, movie_link)
+            
+            
+
+
+
+
