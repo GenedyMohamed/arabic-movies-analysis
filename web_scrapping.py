@@ -79,6 +79,20 @@ def add_films_to_csv():
                             add_to_csv("19"+str(i), movie_name, movie_link)
 
 def get_film_details(movie_link):
+    raw_html = simple_get("https://www.elcinema.com"+movie_link)
+    write_html(raw_html, "page.html")
+    html = read_html(raw_html)
+    found = False
+    for ul in html.select("ul"):
+        div_tags = ul.findAll("div", recursive=True)
+        for div in div_tags:
+            if (div.find("span")):
+                print(div.find("span").text)
+                found = True
+                break
+        if (found):
+            break
+
     return []
 
 
