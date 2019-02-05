@@ -59,8 +59,9 @@ def only_roman_chars(unistr):
 
 def add_films_to_csv():
     for i in range(77, 80): # get arabic movie names and links from year 1977 to 1979
-        print(i)
+        print("Year: 19"+str(i))
         for j in range(1, 100):
+            # time.sleep(1)
             raw_html = simple_get("https://www.elcinema.com/index/work/release_year/19{}?page={}".format(i, j))
             print(j)
             if(raw_html is None):
@@ -74,5 +75,12 @@ def add_films_to_csv():
                         movie_name = movie.text
                         if(not only_roman_chars(movie_name)):
                             movie_link = movie['href']
+                            film_details = get_film_details(movie_link)
                             add_to_csv("19"+str(i), movie_name, movie_link)
+
+def get_film_details(movie_link):
+    return []
+
+
+
 
