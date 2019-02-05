@@ -93,6 +93,28 @@ def get_film_details(movie_link):
         if (found):
             break
 
+    found = False
+    for ul in html.select("ul"):
+        li_tags = ul.findAll("li", recursive=False)
+        for li in li_tags:
+            if ("دقيقة" in li.text):
+                print((li.text).split(" ")[0])
+                found = True
+                break
+        if (found):
+            break
+
+    found = False
+    for p in html.select("p"):
+        span_tags = p.findAll("span", recursive=False)
+        for span in span_tags:
+            if (span["class"][0] == "hide"):
+                print(p.text+" "+span.text)
+                found = True
+                break
+        if (found):
+            break
+
     return []
 
 
