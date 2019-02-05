@@ -32,9 +32,7 @@ for i in range(77, 80): # get arabic movie names and links from year 1977 to 197
                     movie_name = movie.text
                     if(not only_roman_chars(movie_name)):
                         movie_link = movie['href']
-                        print(movie_name)
-                        print(movie_link)
-                        #add_to_csv('1979', movie_name, movie_link)
+                        add_to_csv('1979', movie_name, movie_link)
             
             
 
