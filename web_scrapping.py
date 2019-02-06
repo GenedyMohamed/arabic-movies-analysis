@@ -2,6 +2,7 @@ from requests import get
 from requests.exceptions import RequestException
 from bs4 import BeautifulSoup
 import unicodedata as ud
+import re
 
 def simple_get(url):
     # Attemps to get the content at 'url' by making an HTTP GET request.
@@ -127,12 +128,61 @@ def get_film_details(movie_link):
         if("مخرج" in li.text):
             director_li = li.parent.findAll("li", recursive=False)[0]
             director_a = director_li.find("a", recursive=False)
+            
             if(director_a is not None):
                 directors.append(director_a.text)
-            
     print(directors)
+    
+    #"تصنيف الفيلم"#    
+    genres = []
+    for a in html.select("a"):
+        if(a.has_attr('href') and "genre" in a['href'] and not("المزيد" in a.text)):
+            genres.append(a.text)
+    genres = list(set(genres))
+    if(len(genres)>0):
+        print(genres[0])
+        
+    #"تمثيل"#    
+    actors = []
+    num_actors = 0
+    for h3 in cast_html.select("h3"):
+        if("ﺗﻤﺜﻴﻞ" in h3.text): #and h3.find("span", recursive=False)):
+            
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_actors = int(x.group())
+            num_actors = number_of_actors
+            for li in cast_html.select("li"):
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        actors.append(a.text)
+                        number_of_actors -= 1
+                if (number_of_actors == 0):
+                    break
+            print(actors)
+             
+    #"تأليف"#    
+    writers = []
+    for h3 in cast_html.select("h3"):
+        if("ﺗﺄﻟﻴﻒ" in h3.text): #and h3.find("span", recursive=False)):
+            
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_writers = int(x.group())
+            for li in cast_html.select("li"):
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        if(num_actors == 0):
+                            
+                            writers.append(a.text)
+                            number_of_writers -= 1
+                        else:
+                            num_actors -= 1
+                if (number_of_writers == 0):
+                    break
+            print(writers)
+            
+    
     return []
-
-
-
-

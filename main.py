@@ -8,7 +8,8 @@ from web_scrapping import simple_get, write_html, read_html, add_to_csv, add_fil
     
 #get_film_details("/work/1002400/")
 #get_film_details("/work/1809879/")
-get_film_details("/work/1619698/")         
+#get_film_details("/work/1619698/")
+get_film_details("/work/1007952/")
             
 
 
