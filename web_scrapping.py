@@ -114,7 +114,23 @@ def get_film_details(movie_link):
                 break
         if (found):
             break
-
+    #"تاريخ العرض"#    
+    for a in html.select("a"):
+        if(a.has_attr('href') and  "release_day" in a['href']):
+            print(a.text)
+            break
+    #"إخراج"#    
+    cast_html = read_html(simple_get("https://www.elcinema.com"+movie_link+"cast"))
+    
+    directors = []
+    for li in cast_html.select("li"):
+        if("مخرج" in li.text):
+            director_li = li.parent.findAll("li", recursive=False)[0]
+            director_a = director_li.find("a", recursive=False)
+            if(director_a is not None):
+                directors.append(director_a.text)
+            
+    print(directors)
     return []
 
 
