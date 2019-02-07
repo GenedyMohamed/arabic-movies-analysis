@@ -42,10 +42,14 @@ def read_html(raw_html):
         html = BeautifulSoup("404 Not Found!", 'html.parser')
     return html#.__unicode__()
 
-def add_to_csv(year, title, link):
+def add_to_csv(dict):
     f = open('data.csv', 'a', encoding="utf-8")
-    f.write('\n'+year+', '+title+', '+link)
-    f.close()
+    if (isinstance(dict, str)):
+        f.write('\n'+dict)
+    else:
+        for value in dict.values():
+            f.write('\n'+value)
+    f.close()  
 
 #Check if word is in Latin alphabet or not.
 latin_letters= {}
@@ -76,13 +80,16 @@ def add_films_to_csv():
                         movie_name = movie.text
                         if(not only_roman_chars(movie_name)):
                             movie_link = movie['href']
-                            film_details = get_film_details(movie_link)
-                            add_to_csv("19"+str(i), movie_name, movie_link)
+                            dict = {'year': 19+str(i), 'movie_name': movie_name, 'movie_link': movie_link}
+                            dict.update(get_film_details(dict['movie_link']))
+                            add_to_csv(dict)
 
 def get_film_details(movie_link):
     raw_html = simple_get("https://www.elcinema.com"+movie_link)
     write_html(raw_html, "page.html")
     html = read_html(raw_html)
+    dict = {}
+    #"التقييم"# 
     found = False
     for ul in html.select("ul"):
         div_tags = ul.findAll("div", recursive=True)
@@ -93,7 +100,7 @@ def get_film_details(movie_link):
                 break
         if (found):
             break
-
+    #"المدة"# 
     found = False
     for ul in html.select("ul"):
         li_tags = ul.findAll("li", recursive=False)
@@ -104,13 +111,13 @@ def get_film_details(movie_link):
                 break
         if (found):
             break
-
+    #"التفاصيل"# 
     found = False
     for p in html.select("p"):
         span_tags = p.findAll("span", recursive=False)
         for span in span_tags:
             if (span["class"][0] == "hide"):
-                print(p.text+" "+span.text)
+                dict['description'] = (p.text).replace('...اقرأ المزيد', '') 
                 found = True
                 break
         if (found):
@@ -185,4 +192,4 @@ def get_film_details(movie_link):
             print(writers)
             
     
-    return []
+    return dict
