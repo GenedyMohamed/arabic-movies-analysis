@@ -3,14 +3,15 @@ from web_scrapping import simple_get, write_html, read_html, add_to_csv, add_fil
 
 
 
-# raw_html = simple_get("https://www.elcinema.com/index/work/release_year/1940?page=1")
-# write_html(raw_html, "page.html")
+raw_html = simple_get("https://www.elcinema.com/work/1007952/")
+write_html(raw_html, "page.html")
     
 #get_film_details("/work/1002400/")
 #get_film_details("/work/1809879/")
 #get_film_details("/work/1619698/")
-get_film_details("/work/1007952/")
-            
+dict = {}
+dict.update(get_film_details("/work/1007952/"))
+add_to_csv(dict)            
 
 
 
