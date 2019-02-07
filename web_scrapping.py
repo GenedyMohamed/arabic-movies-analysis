@@ -191,5 +191,25 @@ def get_film_details(movie_link):
                     break
             print(writers)
             
+    musicians = []
+    for h3 in cast_html.select("h3"):
+        if("ﻣﻮﺳﻴﻘﻰ" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_musicians = int(x.group())
+            print("entered")
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                print("entered")
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        musicians.append(a.text)
+                        number_of_musicians -= 1
+                if(number_of_musicians == 0):
+                     break
+            print("Musicians: ")
+            print(musicians)
+            break
     
     return dict
