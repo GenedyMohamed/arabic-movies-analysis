@@ -248,4 +248,22 @@ def get_film_details(movie_link):
             print(photographers)
             break
     
+    montage = []
+    for h3 in cast_html.select("h3"):
+        if("ﻣﻮﻧﺘﺎﺝ" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_montage = int(x.group())
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        montage.append(a.text)
+                        number_of_montage -= 1
+                if(number_of_montage == 0):
+                     break
+            print("Montage: ")
+            print(montage)
+            break
     return dict
