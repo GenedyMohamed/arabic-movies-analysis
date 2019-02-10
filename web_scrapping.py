@@ -47,8 +47,9 @@ def add_to_csv(dict):
     if (isinstance(dict, str)):
         f.write('\n'+dict)
     else:
+        f.write('\n')
         for value in dict.values():
-            f.write('\n'+value)
+            f.write(value+', ')
     f.close()  
 
 #Check if word is in Latin alphabet or not.
@@ -89,28 +90,108 @@ def get_film_details(movie_link):
     write_html(raw_html, "page.html")
     html = read_html(raw_html)
     dict = {}
-    #"التقييم"# 
-    found = False
-    for ul in html.select("ul"):
-        div_tags = ul.findAll("div", recursive=True)
-        for div in div_tags:
-            if (div.find("span")):
-                print(div.find("span").text)
-                found = True
-                break
-        if (found):
-            break
-    #"المدة"# 
-    found = False
-    for ul in html.select("ul"):
-        li_tags = ul.findAll("li", recursive=False)
-        for li in li_tags:
-            if ("دقيقة" in li.text):
-                print((li.text).split(" ")[0])
-                found = True
-                break
-        if (found):
-            break
+    # #"التقييم"# 
+    # found = False
+    # for ul in html.select("ul"):
+    #     div_tags = ul.findAll("div", recursive=True)
+    #     for div in div_tags:
+    #         if (div.find("span")):
+    #             print(div.find("span").text)
+    #             found = True
+    #             break
+    #     if (found):
+    #         break
+    # #"المدة"# 
+    # found = False
+    # for ul in html.select("ul"):
+    #     li_tags = ul.findAll("li", recursive=False)
+    #     for li in li_tags:
+    #         if ("دقيقة" in li.text):
+    #             print((li.text).split(" ")[0])
+    #             found = True
+    #             break
+    #     if (found):
+    #         break
+    # #"التفاصيل"# 
+    # found = False
+    # for p in html.select("p"):
+    #     span_tags = p.findAll("span", recursive=False)
+    #     for span in span_tags:
+    #         if (span["class"][0] == "hide"):
+    #             dict['description'] = (p.text).replace('...اقرأ المزيد', '') 
+    #             found = True
+    #             break
+    #     if (found):
+    #         break
+    # #"تاريخ العرض"#    
+    # for a in html.select("a"):
+    #     if(a.has_attr('href') and  "release_day" in a['href']):
+    #         print(a.text)
+    #         break
+    # #"إخراج"#    
+    # cast_html = read_html(simple_get("https://www.elcinema.com"+movie_link+"cast"))
+    
+    # directors = []
+    # for li in cast_html.select("li"):
+    #     if("مخرج" in li.text):
+    #         director_li = li.parent.findAll("li", recursive=False)[0]
+    #         director_a = director_li.find("a", recursive=False)
+            
+    #         if(director_a is not None):
+    #             directors.append(director_a.text)
+    # print(directors)
+    
+    # #"تصنيف الفيلم"#    
+    # genres = []
+    # for a in html.select("a"):
+    #     if(a.has_attr('href') and "genre" in a['href'] and not("المزيد" in a.text)):
+    #         genres.append(a.text)
+    # genres = list(set(genres))
+    # if(len(genres)>0):
+    #     print(genres[0])
+        
+    # #"تمثيل"#    
+    # actors = []
+    # num_actors = 0
+    # for h3 in cast_html.select("h3"):
+    #     if("ﺗﻤﺜﻴﻞ" in h3.text): #and h3.find("span", recursive=False)):
+            
+    #         span = h3.find("span", recursive=False)
+    #         x = re.search(r'\d+', span.text)
+    #         number_of_actors = int(x.group())
+    #         num_actors = number_of_actors
+    #         for li in cast_html.select("li"):
+    #             if(li.find("a")):
+    #                 a = li.find("a")
+    #                 if(a.has_attr("href") and "person" in a['href']):
+    #                     actors.append(a.text)
+    #                     number_of_actors -= 1
+    #             if (number_of_actors == 0):
+    #                 break
+    #         print(actors)
+             
+    # #"تأليف"#    
+    # writers = []
+    # for h3 in cast_html.select("h3"):
+    #     if("ﺗﺄﻟﻴﻒ" in h3.text): #and h3.find("span", recursive=False)):
+            
+    #         span = h3.find("span", recursive=False)
+    #         x = re.search(r'\d+', span.text)
+    #         number_of_writers = int(x.group())
+    #         for li in cast_html.select("li"):
+    #             if(li.find("a")):
+    #                 a = li.find("a")
+    #                 if(a.has_attr("href") and "person" in a['href']):
+    #                     if(num_actors == 0):
+                            
+    #                         writers.append(a.text)
+    #                         number_of_writers -= 1
+    #                     else:
+    #                         num_actors -= 1
+    #             if (number_of_writers == 0):
+    #                 break
+    #         print(writers)
+    
     #"التفاصيل"# 
     found = False
     for p in html.select("p"):
@@ -122,74 +203,5 @@ def get_film_details(movie_link):
                 break
         if (found):
             break
-    #"تاريخ العرض"#    
-    for a in html.select("a"):
-        if(a.has_attr('href') and  "release_day" in a['href']):
-            print(a.text)
-            break
-    #"إخراج"#    
-    cast_html = read_html(simple_get("https://www.elcinema.com"+movie_link+"cast"))
-    
-    directors = []
-    for li in cast_html.select("li"):
-        if("مخرج" in li.text):
-            director_li = li.parent.findAll("li", recursive=False)[0]
-            director_a = director_li.find("a", recursive=False)
-            
-            if(director_a is not None):
-                directors.append(director_a.text)
-    print(directors)
-    
-    #"تصنيف الفيلم"#    
-    genres = []
-    for a in html.select("a"):
-        if(a.has_attr('href') and "genre" in a['href'] and not("المزيد" in a.text)):
-            genres.append(a.text)
-    genres = list(set(genres))
-    if(len(genres)>0):
-        print(genres[0])
-        
-    #"تمثيل"#    
-    actors = []
-    num_actors = 0
-    for h3 in cast_html.select("h3"):
-        if("ﺗﻤﺜﻴﻞ" in h3.text): #and h3.find("span", recursive=False)):
-            
-            span = h3.find("span", recursive=False)
-            x = re.search(r'\d+', span.text)
-            number_of_actors = int(x.group())
-            num_actors = number_of_actors
-            for li in cast_html.select("li"):
-                if(li.find("a")):
-                    a = li.find("a")
-                    if(a.has_attr("href") and "person" in a['href']):
-                        actors.append(a.text)
-                        number_of_actors -= 1
-                if (number_of_actors == 0):
-                    break
-            print(actors)
-             
-    #"تأليف"#    
-    writers = []
-    for h3 in cast_html.select("h3"):
-        if("ﺗﺄﻟﻴﻒ" in h3.text): #and h3.find("span", recursive=False)):
-            
-            span = h3.find("span", recursive=False)
-            x = re.search(r'\d+', span.text)
-            number_of_writers = int(x.group())
-            for li in cast_html.select("li"):
-                if(li.find("a")):
-                    a = li.find("a")
-                    if(a.has_attr("href") and "person" in a['href']):
-                        if(num_actors == 0):
-                            
-                            writers.append(a.text)
-                            number_of_writers -= 1
-                        else:
-                            num_actors -= 1
-                if (number_of_writers == 0):
-                    break
-            print(writers)
-            
     
     return dict
