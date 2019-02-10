@@ -49,7 +49,7 @@ def add_to_csv(dict):
     else:
         f.write('\n')
         for value in dict.values():
-            f.write(','+value)
+            f.write(value+', ')
     f.close()  
 
 #Check if word is in Latin alphabet or not.
