@@ -47,8 +47,9 @@ def add_to_csv(dict):
     if (isinstance(dict, str)):
         f.write('\n'+dict)
     else:
+        f.write('\n')
         for value in dict.values():
-            f.write('\n'+value)
+            f.write(','+value)
     f.close()  
 
 #Check if word is in Latin alphabet or not.
@@ -197,10 +198,8 @@ def get_film_details(movie_link):
             span = h3.find("span", recursive=False)
             x = re.search(r'\d+', span.text)
             number_of_musicians = int(x.group())
-            print("entered")
             lis = h3.parent.parent.findAll("li")
             for li in lis:
-                print("entered")
                 if(li.find("a")):
                     a = li.find("a")
                     if(a.has_attr("href") and "person" in a['href']):
@@ -210,6 +209,25 @@ def get_film_details(movie_link):
                      break
             print("Musicians: ")
             print(musicians)
+            break
+    
+    decor = []
+    for h3 in cast_html.select("h3"):
+        if("ﺩﻳﻜﻮﺭ" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_decorators = int(x.group())
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        decor.append(a.text)
+                        number_of_decorators -= 1
+                if(number_of_decorators == 0):
+                     break
+            print("Decor: ")
+            print(decor)
             break
     
     return dict
