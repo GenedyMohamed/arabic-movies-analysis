@@ -203,5 +203,111 @@ def get_film_details(movie_link):
                 break
         if (found):
             break
+    #"تاريخ العرض"#    
+    for a in html.select("a"):
+        if(a.has_attr('href') and  "release_day" in a['href']):
+            print(a.text)
+            break
+    #"إخراج"#    
+    cast_html = read_html(simple_get("https://www.elcinema.com"+movie_link+"cast"))
+    
+    directors = []
+    for li in cast_html.select("li"):
+        if("مخرج" in li.text):
+            director_li = li.parent.findAll("li", recursive=False)[0]
+            director_a = director_li.find("a", recursive=False)
+            
+            if(director_a is not None):
+                directors.append(director_a.text)
+    print(directors)
+    
+    #"تصنيف الفيلم"#    
+    genres = []
+    for a in html.select("a"):
+        if(a.has_attr('href') and "genre" in a['href'] and not("المزيد" in a.text)):
+            genres.append(a.text)
+    genres = list(set(genres))
+    if(len(genres)>0):
+        print(genres[0])
+        
+    #"تمثيل"#    
+    actors = []
+    num_actors = 0
+    for h3 in cast_html.select("h3"):
+        if("ﺗﻤﺜﻴﻞ" in h3.text): #and h3.find("span", recursive=False)):
+            
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_actors = int(x.group())
+            num_actors = number_of_actors
+            for li in cast_html.select("li"):
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        actors.append(a.text)
+                        number_of_actors -= 1
+                if (number_of_actors == 0):
+                    break
+            print(actors)
+             
+    #"تأليف"#    
+    writers = []
+    for h3 in cast_html.select("h3"):
+        if("ﺗﺄﻟﻴﻒ" in h3.text): #and h3.find("span", recursive=False)):
+            
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_writers = int(x.group())
+            for li in cast_html.select("li"):
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        if(num_actors == 0):
+                            
+                            writers.append(a.text)
+                            number_of_writers -= 1
+                        else:
+                            num_actors -= 1
+                if (number_of_writers == 0):
+                    break
+            print(writers)
+            
+    musicians = []
+    for h3 in cast_html.select("h3"):
+        if("ﻣﻮﺳﻴﻘﻰ" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_musicians = int(x.group())
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        musicians.append(a.text)
+                        number_of_musicians -= 1
+                if(number_of_musicians == 0):
+                     break
+            print("Musicians: ")
+            print(musicians)
+            break
+    
+    decor = []
+    for h3 in cast_html.select("h3"):
+        if("ﺩﻳﻜﻮﺭ" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_decorators = int(x.group())
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        decor.append(a.text)
+                        number_of_decorators -= 1
+                if(number_of_decorators == 0):
+                     break
+            print("Decor: ")
+            print(decor)
+            break
     
     return dict
