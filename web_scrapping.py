@@ -122,10 +122,12 @@ def get_film_details(movie_link):
                 found = True
                 break
         if (found):
+            print(dict['description'])
             break
     #"تاريخ العرض"#    
     for a in html.select("a"):
         if(a.has_attr('href') and  "release_day" in a['href']):
+            print("Release Day: ")
             print(a.text)
             break
     #"إخراج"#    
@@ -139,6 +141,7 @@ def get_film_details(movie_link):
             
             if(director_a is not None):
                 directors.append(director_a.text)
+    print("Directors: ")
     print(directors)
     
     #"تصنيف الفيلم"#    
@@ -148,6 +151,7 @@ def get_film_details(movie_link):
             genres.append(a.text)
     genres = list(set(genres))
     if(len(genres)>0):
+        print("Genre: ")
         print(genres[0])
         
     #"تمثيل"#    
@@ -168,6 +172,7 @@ def get_film_details(movie_link):
                         number_of_actors -= 1
                 if (number_of_actors == 0):
                     break
+            print("Actors: ")
             print(actors)
              
     #"تأليف"#    
@@ -190,6 +195,7 @@ def get_film_details(movie_link):
                             num_actors -= 1
                 if (number_of_writers == 0):
                     break
+            print("Writers: ")
             print(writers)
             
     musicians = []
@@ -266,4 +272,62 @@ def get_film_details(movie_link):
             print("Montage: ")
             print(montage)
             break
+        
+    production =[]
+    for h3 in cast_html.select("h3"):
+        if("اﻧﺘﺎﺝ" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_producers = int(x.group())
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        production.append(a.text)
+                        number_of_producers -= 1
+                if(number_of_producers == 0):
+                     break
+            print("Production: ")
+            print(production)
+            break
+    
+    publishing =[]
+    for h3 in cast_html.select("h3"):
+        if("ﺗﻮﺯﻳﻊ" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_publishers = int(x.group())
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        publishing.append(a.text)
+                        number_of_publishers -= 1
+                if(number_of_publishers == 0):
+                     break
+            print("Publishing: ")
+            print(publishing)
+            break
+        
+    clothes =[]
+    for h3 in cast_html.select("h3"):
+        if("ﻣﻼﺑﺲ" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_clothes = int(x.group())
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        clothes.append(a.text)
+                        number_of_clothes -= 1
+                if(number_of_clothes == 0):
+                     break
+            print("Clothes: ")
+            print(clothes)
+            break
+    
     return dict

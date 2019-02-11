@@ -11,7 +11,7 @@ write_html(raw_html, "page.html")
 #get_film_details("/work/1619698/")
 #get_film_details("/work/1006659/")
 dict = {}
-dict.update(get_film_details("/work/1007952/"))
+dict.update(get_film_details("/work/1010326/"))
 add_to_csv(dict)            
 
 #get_film_details("/work/1010353/")
