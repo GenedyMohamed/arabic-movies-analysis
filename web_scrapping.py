@@ -3,6 +3,7 @@ from requests.exceptions import RequestException
 from bs4 import BeautifulSoup
 import unicodedata as ud
 import re
+import csv
 
 def simple_get(url):
     # Attemps to get the content at 'url' by making an HTTP GET request.
@@ -44,12 +45,15 @@ def read_html(raw_html):
 
 def add_to_csv(dict):
     f = open('data.csv', 'a', encoding="utf-8")
+    writer = csv.writer(f)
     if (isinstance(dict, str)):
         f.write('\n'+dict)
     else:
         f.write('\n')
+        arr = []
         for value in dict.values():
-            f.write(value+', ')
+            arr.append(value)
+        writer.writerow(arr)
     f.close()  
 
 #Check if word is in Latin alphabet or not.
@@ -64,7 +68,7 @@ def only_roman_chars(unistr):
            if uchr.isalpha())
 
 def add_films_to_csv():
-    for i in range(77, 80): # get arabic movie names and links from year 1977 to 1979
+    for i in range(79, 80): # get arabic movie names and links from year 1977 to 1979
         print("Year: 19"+str(i))
         for j in range(1, 100):
             # time.sleep(1)
@@ -81,9 +85,10 @@ def add_films_to_csv():
                         movie_name = movie.text
                         if(not only_roman_chars(movie_name)):
                             movie_link = movie['href']
-                            dict = {'year': 19+str(i), 'movie_name': movie_name, 'movie_link': movie_link}
+                            dict = {'السنه': str(19)+str(i), 'اسم الفيلم': movie_name, 'movie_link': movie_link}
                             dict.update(get_film_details(dict['movie_link']))
-                            add_to_csv(dict)
+                            dict2 = {'اسم الفيلم': dict['اسم الفيلم'], 'تاريخ العرض': dict['تاريخ العرض'], 'تصنيف الفيلم': dict['تصنيف الفيلم'], 'مدة الفيلم': dict['مدة الفيلم'], 'ملخص': dict['ملخص'], 'تأليف': dict['تأليف'], 'تمثيل': dict['تمثيل']}
+                            add_to_csv(dict2)
 
 def get_film_details(movie_link):
     raw_html = simple_get("https://www.elcinema.com"+movie_link)
@@ -92,46 +97,51 @@ def get_film_details(movie_link):
     dict = {}
     #"التقييم"# 
     found = False
+    dict['التقييم'] = ''
     for ul in html.select("ul"):
         div_tags = ul.findAll("div", recursive=True)
         for div in div_tags:
             if (div.find("span")):
-                print(div.find("span").text)
+                dict['التقييم'] = div.find("span").text
                 found = True
                 break
         if (found):
             break
-    #"المدة"# 
+    #"مدة الفيلم"# 
     found = False
+    dict['مدة الفيلم'] = ''
     for ul in html.select("ul"):
         li_tags = ul.findAll("li", recursive=False)
         for li in li_tags:
             if ("دقيقة" in li.text):
-                print((li.text).split(" ")[0])
+                dict['مدة الفيلم'] = (li.text).split(" ")[0]
                 found = True
                 break
         if (found):
             break
-    #"التفاصيل"# 
+    #"ملخص"# 
     found = False
+    dict['ملخص'] = ''
     for p in html.select("p"):
         span_tags = p.findAll("span", recursive=False)
         for span in span_tags:
             if (span["class"][0] == "hide"):
-                dict['description'] = (p.text).replace('...اقرأ المزيد', '') 
+                dict['ملخص'] = (p.text).replace('...اقرأ المزيد', '') 
                 found = True
                 break
         if (found):
             break
-    #"تاريخ العرض"#    
+    #"تاريخ العرض"#  
+    dict['تاريخ العرض'] = ''  
     for a in html.select("a"):
         if(a.has_attr('href') and  "release_day" in a['href']):
-            print(a.text)
+            dict['تاريخ العرض'] = a.text
             break
     #"إخراج"#    
     cast_html = read_html(simple_get("https://www.elcinema.com"+movie_link+"cast"))
     
     directors = []
+    dict['إخراج'] = ''
     for li in cast_html.select("li"):
         if("مخرج" in li.text):
             director_li = li.parent.findAll("li", recursive=False)[0]
@@ -139,20 +149,22 @@ def get_film_details(movie_link):
             
             if(director_a is not None):
                 directors.append(director_a.text)
-    print(directors)
+    dict['إخراج'] = directors
     
     #"تصنيف الفيلم"#    
     genres = []
+    dict['تصنيف الفيلم'] = ''
     for a in html.select("a"):
         if(a.has_attr('href') and "genre" in a['href'] and not("المزيد" in a.text)):
             genres.append(a.text)
     genres = list(set(genres))
     if(len(genres)>0):
-        print(genres[0])
+        dict['تصنيف الفيلم'] = genres[0]
         
     #"تمثيل"#    
     actors = []
     num_actors = 0
+    dict['تمثيل'] = ''
     for h3 in cast_html.select("h3"):
         if("ﺗﻤﺜﻴﻞ" in h3.text): #and h3.find("span", recursive=False)):
             
@@ -168,10 +180,11 @@ def get_film_details(movie_link):
                         number_of_actors -= 1
                 if (number_of_actors == 0):
                     break
-            print(actors)
+            dict['تمثيل'] = actors
              
     #"تأليف"#    
     writers = []
+    dict['تأليف'] = ''
     for h3 in cast_html.select("h3"):
         if("ﺗﺄﻟﻴﻒ" in h3.text): #and h3.find("span", recursive=False)):
             
@@ -190,9 +203,10 @@ def get_film_details(movie_link):
                             num_actors -= 1
                 if (number_of_writers == 0):
                     break
-            print(writers)
+            dict['تأليف'] = writers
             
     musicians = []
+    dict['موسيقى'] = ''
     for h3 in cast_html.select("h3"):
         if("ﻣﻮﺳﻴﻘﻰ" in h3.text):
             span = h3.find("span", recursive=False)
@@ -207,11 +221,11 @@ def get_film_details(movie_link):
                         number_of_musicians -= 1
                 if(number_of_musicians == 0):
                      break
-            print("Musicians: ")
-            print(musicians)
+            dict['موسيقى'] = musicians
             break
     
     decor = []
+    dict['ديكور'] = ''
     for h3 in cast_html.select("h3"):
         if("ﺩﻳﻜﻮﺭ" in h3.text):
             span = h3.find("span", recursive=False)
@@ -226,10 +240,10 @@ def get_film_details(movie_link):
                         number_of_decorators -= 1
                 if(number_of_decorators == 0):
                      break
-            print("Decor: ")
-            print(decor)
+            dict['ديكور'] = decor
             break
     photographers = []
+    dict['تصوير'] = ''
     for h3 in cast_html.select("h3"):
         if("ﺗﺼﻮﻳﺮ" in h3.text):
             span = h3.find("span", recursive=False)
@@ -244,11 +258,11 @@ def get_film_details(movie_link):
                         number_of_photographers -= 1
                 if(number_of_photographers == 0):
                      break
-            print("Photographers: ")
-            print(photographers)
+            dict['تصوير'] = photographers
             break
     
     montage = []
+    dict['ﻣﻮﻧﺘﺎﺝ'] = ''
     for h3 in cast_html.select("h3"):
         if("ﻣﻮﻧﺘﺎﺝ" in h3.text):
             span = h3.find("span", recursive=False)
@@ -263,7 +277,6 @@ def get_film_details(movie_link):
                         number_of_montage -= 1
                 if(number_of_montage == 0):
                      break
-            print("Montage: ")
-            print(montage)
+            dict['ﻣﻮﻧﺘﺎﺝ'] = montage
             break
     return dict
