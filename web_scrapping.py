@@ -44,17 +44,13 @@ def read_html(raw_html):
     return html#.__unicode__()
 
 def add_to_csv(dict):
-    f = open('data.csv', 'a', encoding="utf-8")
+    f = open('data.csv', 'a', newline='', encoding="utf-8")
     writer = csv.writer(f)
-    if (isinstance(dict, str)):
-        f.write('\n'+dict)
-    else:
-        f.write('\n')
-        arr = []
-        for value in dict.values():
-            arr.append(value)
-        writer.writerow(arr)
-    f.close()  
+    arr = []
+    for value in dict.values():
+        arr.append(value)
+    writer.writerow(arr)
+    f.close()
 
 #Check if word is in Latin alphabet or not.
 latin_letters= {}
@@ -87,7 +83,7 @@ def add_films_to_csv():
                             movie_link = movie['href']
                             dict = {'السنه': str(19)+str(i), 'اسم الفيلم': movie_name, 'movie_link': movie_link}
                             dict.update(get_film_details(dict['movie_link']))
-                            dict2 = {'اسم الفيلم': dict['اسم الفيلم'], 'تاريخ العرض': dict['تاريخ العرض'], 'تصنيف الفيلم': dict['تصنيف الفيلم'], 'مدة الفيلم': dict['مدة الفيلم'], 'ملخص': dict['ملخص'], 'تأليف': dict['تأليف'], 'تمثيل': dict['تمثيل']}
+                            dict2 = {'اسم الفيلم': dict['اسم الفيلم'], 'تاريخ العرض': dict['تاريخ العرض']+' '+str(19)+str(i), 'تصنيف الفيلم': dict['تصنيف الفيلم'], 'مدة الفيلم': dict['مدة الفيلم'], 'ملخص': dict['ملخص'], 'تأليف': dict['تأليف'], 'تمثيل': dict['تمثيل'], 'إنتاج': dict['إنتاج'], 'تصوير': dict['تصوير'], 'مونتاج': dict['مونتاج'], 'ديكور': dict['ديكور'], 'ملابس': dict['ملابس'], 'موسيقى': dict['موسيقى'], 'إخراج': dict['إخراج'], 'إنتاج': dict['إنتاج'], 'توزيع': dict['توزيع']}
                             add_to_csv(dict2)
 
 def get_film_details(movie_link):
@@ -262,9 +258,9 @@ def get_film_details(movie_link):
             break
     
     montage = []
-    dict['ﻣﻮﻧﺘﺎﺝ'] = ''
+    dict['مونتاج'] = ''
     for h3 in cast_html.select("h3"):
-        if("ﻣﻮﻧﺘﺎﺝ" in h3.text):
+        if("ﻣﻮﻧﺘﺎﺝ" in h3.text or "مونتاج" in h3.text):
             span = h3.find("span", recursive=False)
             x = re.search(r'\d+', span.text)
             number_of_montage = int(x.group())
@@ -277,6 +273,64 @@ def get_film_details(movie_link):
                         number_of_montage -= 1
                 if(number_of_montage == 0):
                      break
-            dict['ﻣﻮﻧﺘﺎﺝ'] = montage
+            dict['مونتاج'] = montage
             break
+        
+    production =[]
+    dict['إنتاج'] = ''
+    for h3 in cast_html.select("h3"):
+        if("اﻧﺘﺎﺝ" in h3.text or "إنتاج" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_producers = int(x.group())
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        production.append(a.text)
+                        number_of_producers -= 1
+                if(number_of_producers == 0):
+                     break
+            dict['إنتاج'] = production
+            break
+    
+    publishing =[]
+    dict['توزيع'] = ''
+    for h3 in cast_html.select("h3"):
+        if("ﺗﻮﺯﻳﻊ" in h3.text or "توزيع" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_publishers = int(x.group())
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        publishing.append(a.text)
+                        number_of_publishers -= 1
+                if(number_of_publishers == 0):
+                     break
+            dict['توزيع'] = publishing
+            break
+        
+    clothes =[]
+    dict['ملابس'] = ''
+    for h3 in cast_html.select("h3"):
+        if("ﻣﻼﺑﺲ" in h3.text or "ملابس" in h3.text):
+            span = h3.find("span", recursive=False)
+            x = re.search(r'\d+', span.text)
+            number_of_clothes = int(x.group())
+            lis = h3.parent.parent.findAll("li")
+            for li in lis:
+                if(li.find("a")):
+                    a = li.find("a")
+                    if(a.has_attr("href") and "person" in a['href']):
+                        clothes.append(a.text)
+                        number_of_clothes -= 1
+                if(number_of_clothes == 0):
+                     break
+            dict['ملابس'] = clothes
+            break
+    
     return dict
