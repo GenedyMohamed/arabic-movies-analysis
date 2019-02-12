@@ -88,7 +88,6 @@ def add_films_to_csv():
 
 def get_film_details(movie_link):
     raw_html = simple_get("https://www.elcinema.com"+movie_link)
-    write_html(raw_html, "page.html")
     html = read_html(raw_html)
     dict = {}
     #"التقييم"# 
@@ -145,6 +144,7 @@ def get_film_details(movie_link):
             
             if(director_a is not None):
                 directors.append(director_a.text)
+    directors = ','.join(directors)
     dict['إخراج'] = directors
     
     #"تصنيف الفيلم"#    
@@ -176,6 +176,7 @@ def get_film_details(movie_link):
                         number_of_actors -= 1
                 if (number_of_actors == 0):
                     break
+            actors = ','.join(actors)
             dict['تمثيل'] = actors
              
     #"تأليف"#    
@@ -199,6 +200,7 @@ def get_film_details(movie_link):
                             num_actors -= 1
                 if (number_of_writers == 0):
                     break
+            writers = ','.join(writers)
             dict['تأليف'] = writers
             
     musicians = []
@@ -217,6 +219,7 @@ def get_film_details(movie_link):
                         number_of_musicians -= 1
                 if(number_of_musicians == 0):
                      break
+            musicians = ','.join(musicians)
             dict['موسيقى'] = musicians
             break
     
@@ -236,6 +239,7 @@ def get_film_details(movie_link):
                         number_of_decorators -= 1
                 if(number_of_decorators == 0):
                      break
+            decor = ','.join(decor)
             dict['ديكور'] = decor
             break
     photographers = []
@@ -254,6 +258,7 @@ def get_film_details(movie_link):
                         number_of_photographers -= 1
                 if(number_of_photographers == 0):
                      break
+            photographers = ','.join(photographers)
             dict['تصوير'] = photographers
             break
     
@@ -273,6 +278,7 @@ def get_film_details(movie_link):
                         number_of_montage -= 1
                 if(number_of_montage == 0):
                      break
+            montage = ','.join(montage)
             dict['مونتاج'] = montage
             break
         
@@ -292,6 +298,7 @@ def get_film_details(movie_link):
                         number_of_producers -= 1
                 if(number_of_producers == 0):
                      break
+            production = ','.join(production)
             dict['إنتاج'] = production
             break
     
@@ -311,6 +318,7 @@ def get_film_details(movie_link):
                         number_of_publishers -= 1
                 if(number_of_publishers == 0):
                      break
+            publishing = ','.join(publishing)
             dict['توزيع'] = publishing
             break
         
@@ -330,6 +338,7 @@ def get_film_details(movie_link):
                         number_of_clothes -= 1
                 if(number_of_clothes == 0):
                      break
+            clothes = ','.join(clothes)
             dict['ملابس'] = clothes
             break
     
