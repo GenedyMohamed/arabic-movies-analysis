@@ -4,8 +4,7 @@ from bs4 import BeautifulSoup
 import unicodedata as ud
 import re
 import csv
-import os
-import pandas as pd
+from collections import defaultdict
 
 def simple_get(url):
     # Attemps to get the content at 'url' by making an HTTP GET request.
@@ -66,31 +65,6 @@ def only_roman_chars(unistr):
            if uchr.isalpha())
 
 def get_avg_duration(year):
-    sum = 0
-    count = 0
-    for j in range(1, 100):
-        raw_html = simple_get("https://www.elcinema.com/index/work/release_year/{}?page={}".format(year, j))
-        print(j)
-        if(raw_html is None):
-            break
-        html = read_html(raw_html)
-        for td in html.select("td"):
-            a_tags = td.findAll("a", recursive=False)
-            for a in a_tags:
-                if(a.find("img") and td.parent.find("td", string="فيلم")):
-                    movie = a.parent.findAll("a", recursive=False)[-1]
-                    movie_name = movie.text
-                    if(not only_roman_chars(movie_name)):
-                        movie_link = movie['href']
-                        dict = {'السنه': str(year), 'اسم الفيلم': movie_name, 'movie_link': movie_link}
-                        dict.update(get_film_details(dict['movie_link']))
-                        if (not dict['مدة الفيلم'] == ''):
-                            sum += int(dict['مدة الفيلم'])
-                            count += 1
-    return sum/count
-from collections import defaultdict
-
-def get_avg_duration2(year):
     f = open('data.csv', 'r', encoding="utf-8")
     writer = open('test.txt', 'a', encoding='utf-8')
     reader = csv.DictReader(f)
@@ -106,16 +80,16 @@ def get_avg_duration2(year):
     count = 0
     i = 0
     for movie_year in movie_years:
-        if re.search(str(year), movie_year):
+        if re.search(str(year), movie_year) and not movie_lengths[i] == '' :
             sum += float(movie_lengths[i])
             count += 1
         i += 1
-    print("{:.1f}".format(sum/count))
+    return "{:.1f}".format(sum/count)
 
 def add_films_to_csv():
     for i in range(40, 80): # get arabic movie names and links from year 1977 to 1979
         print("Year: 19"+str(i))
-        avg = "{:.1f}".format(float(get_avg_duration(int('19'+str(i)))))
+        # avg = "{:.1f}".format(float(get_avg_duration(int('19'+str(i)))))
         for j in range(1, 100):
             raw_html = simple_get("https://www.elcinema.com/index/work/release_year/19{}?page={}".format(i, j))
             print(j)
@@ -132,8 +106,8 @@ def add_films_to_csv():
                             movie_link = movie['href']
                             dict = {'السنه': str(19)+str(i), 'اسم الفيلم': movie_name, 'movie_link': movie_link}
                             dict.update(get_film_details(dict['movie_link']))
-                            if (dict['مدة الفيلم'] == ''):
-                                dict['مدة الفيلم'] = str(avg)
+                            # if (dict['مدة الفيلم'] == ''):
+                            #     dict['مدة الفيلم'] = str(avg)
                             dict2 = {'اسم الفيلم': dict['اسم الفيلم'], 'تاريخ العرض': dict['تاريخ العرض']+' '+str(19)+str(i), 'تصنيف الفيلم': dict['تصنيف الفيلم'], 'مدة الفيلم': dict['مدة الفيلم'], 'ملخص': dict['ملخص'], 'تأليف': dict['تأليف'], 'تمثيل': dict['تمثيل'], 'إنتاج': dict['إنتاج'], 'تصوير': dict['تصوير'], 'مونتاج': dict['مونتاج'], 'ديكور': dict['ديكور'], 'ملابس': dict['ملابس'], 'موسيقى': dict['موسيقى'], 'إخراج': dict['إخراج'], 'إنتاج': dict['إنتاج'], 'توزيع': dict['توزيع']}
                             add_to_csv(dict2)
 

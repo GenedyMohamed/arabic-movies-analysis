@@ -1,4 +1,4 @@
-from web_scrapping import simple_get, write_html, read_html, add_to_csv, add_films_to_csv, get_film_details, get_avg_duration2
+from web_scrapping import simple_get, write_html, read_html, add_to_csv, add_films_to_csv, get_film_details, get_avg_duration
 
 
 
@@ -17,6 +17,6 @@ from web_scrapping import simple_get, write_html, read_html, add_to_csv, add_fil
 
 # add_films_to_csv()
 
-get_avg_duration2(1940)
+print(get_avg_duration(1942))
 
 
