@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 import unicodedata as ud
 import re
 import csv
+import os
+import pandas as pd
 
 def simple_get(url):
     # Attemps to get the content at 'url' by making an HTTP GET request.
@@ -86,6 +88,29 @@ def get_avg_duration(year):
                             sum += int(dict['مدة الفيلم'])
                             count += 1
     return sum/count
+from collections import defaultdict
+
+def get_avg_duration2(year):
+    f = open('data.csv', 'r', encoding="utf-8")
+    writer = open('test.txt', 'a', encoding='utf-8')
+    reader = csv.DictReader(f)
+    writer.write(str(reader.fieldnames))
+    columns = defaultdict(list)
+    for row in reader: # read a row as {column1: value1, column2: value2,...}
+        for (k,v) in row.items(): # go over each column name and value 
+            columns[k].append(v) # append the value into the appropriate list
+                                 # based on column name k
+    movie_years = columns[' تاريخ العرض']
+    movie_lengths = columns[' مدة الفيلم (دقيقة)']
+    sum = 0
+    count = 0
+    i = 0
+    for movie_year in movie_years:
+        if re.search(str(year), movie_year):
+            sum += float(movie_lengths[i])
+            count += 1
+        i += 1
+    print("{:.1f}".format(sum/count))
 
 def add_films_to_csv():
     for i in range(40, 80): # get arabic movie names and links from year 1977 to 1979
