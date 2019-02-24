@@ -408,15 +408,15 @@ def get_names():
             columns[k].append(v) # append the value into the appropriate list
                                  # based on column name k
     writersCol = columns[' تأليف']
-    actorsCol = columns['تمثيل']
-    producersCol = columns['إنتاج']
-    photographersCol = columns['تصوير']
-    montageCol = columns['مونتاج']
-    decorCol = columns['ديكور']
-    clothesCol = columns['ملابس']
-    musiciansCol = columns['موسيقى']
-    directorsCol = columns['إخراج']
-    publishersCol = columns['توزيع']
+    actorsCol = columns[' تمثيل']
+    producersCol = columns[' إنتاج']
+    photographersCol = columns[' تصوير']
+    montageCol = columns[' مونتاج']
+    decorCol = columns[' ديكور']
+    clothesCol = columns[' ملابس']
+    musiciansCol = columns[' موسيقى']
+    directorsCol = columns[' إخراج']
+    publishersCol = columns[' توزيع']
     
     f.close()
     
