@@ -15,8 +15,8 @@ from web_scrapping import simple_get, write_html, read_html, add_to_csv, add_fil
 # add_to_csv(dict)            
 # get_film_details("/work/1010353/")
 
-add_films_to_csv()
-# write_avg_durations()
+# add_films_to_csv()
+write_avg_durations()
 
 # print(get_avg_duration(1949))
 

@@ -78,8 +78,11 @@ def get_avg_duration(year):
     i = 0
     for movie_year in movie_years:
         if re.search(str(year), movie_year) and not movie_lengths[i] == '-' :
-            sum += float(movie_lengths[i])
-            count += 1
+            try:
+                sum += float(movie_lengths[i])
+                count += 1
+            except ValueError:
+                pass
         i += 1
     if count == 0:
         return 0.0
@@ -96,12 +99,12 @@ def write_avg_durations():
     movie_lengths = columns[' مدة الفيلم (دقيقة)']
     i = 0
     f.close()
-    print(movie_lengths)
     f = open('data.csv', 'r+', encoding="utf-8")
     data = f.readlines()
     
     years_dict = dict()
     for year in movie_years:
+        print(year)
         if re.search(r'[0-9][0-9][0-9][0-9]', year):
             year = re.search(r'[0-9][0-9][0-9][0-9]', year).group(0)
             years_dict.update({year: get_avg_duration(year)})
@@ -109,18 +112,17 @@ def write_avg_durations():
     f.close()
     f = open('data.csv', 'w+', encoding="utf-8")
     for line in data:
-        if i < len(movie_lengths) and movie_lengths[i-1] == '-':
-            year = re.search(r'[0-9][0-9][0-9][0-9]', movie_years[i]).group(0)
-            f.write(line.replace('-', str(years_dict[year]), 1))
+        if i < len(movie_lengths) and ',-,' in line:
+            year = re.search(r'[1][9][4-9][0-9]', line).group(0)
+            f.write(line.replace(',-,', ','+str(years_dict[year])+',', 1))
         else:
             f.write(line)
         i += 1
     f.close()
 
 def add_films_to_csv():
-    for i in range(40, 80): # get arabic movie names and links from year 1977 to 1979
+    for i in range(40, 80): # get arabic movie names and links from year 1940 to 1979
         print("Year: 19"+str(i))
-        # avg = "{:.1f}".format(float(get_avg_duration(int('19'+str(i)))))
         for j in range(1, 100):
             raw_html = simple_get("https://www.elcinema.com/index/work/release_year/19{}?page={}".format(i, j))
             print(j)
@@ -137,8 +139,6 @@ def add_films_to_csv():
                             movie_link = movie['href']
                             dict = {'السنه': str(19)+str(i), 'اسم الفيلم': movie_name, 'movie_link': movie_link}
                             dict.update(get_film_details(dict['movie_link']))
-                            # if (dict['مدة الفيلم'] == ''):
-                            #     dict['مدة الفيلم'] = str(avg)
                             dict2 = {'اسم الفيلم': dict['اسم الفيلم'], 'تاريخ العرض': dict['تاريخ العرض']+' '+str(19)+str(i), 'تصنيف الفيلم': dict['تصنيف الفيلم'], 'مدة الفيلم': dict['مدة الفيلم'], 'ملخص': dict['ملخص'], 'تأليف': dict['تأليف'], 'تمثيل': dict['تمثيل'], 'إنتاج': dict['إنتاج'], 'تصوير': dict['تصوير'], 'مونتاج': dict['مونتاج'], 'ديكور': dict['ديكور'], 'ملابس': dict['ملابس'], 'موسيقى': dict['موسيقى'], 'إخراج': dict['إخراج'], 'توزيع': dict['توزيع']}
                             add_to_csv(dict2)
 def get_film_details(movie_link):
