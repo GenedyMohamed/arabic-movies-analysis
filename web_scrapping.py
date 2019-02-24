@@ -398,3 +398,95 @@ def get_film_details(movie_link):
             break
     
     return dict
+
+def get_names():
+    f = open('data.csv', 'r', encoding="utf-8")
+    reader = csv.DictReader(f)
+    columns = defaultdict(list)
+    for row in reader: # read a row as {column1: value1, column2: value2,...}
+        for (k,v) in row.items(): # go over each column name and value 
+            columns[k].append(v) # append the value into the appropriate list
+                                 # based on column name k
+    writersCol = columns[' تأليف']
+    actorsCol = columns['تمثيل']
+    producersCol = columns['إنتاج']
+    photographersCol = columns['تصوير']
+    montageCol = columns['مونتاج']
+    decorCol = columns['ديكور']
+    clothesCol = columns['ملابس']
+    musiciansCol = columns['موسيقى']
+    directorsCol = columns['إخراج']
+    publishersCol = columns['توزيع']
+    
+    f.close()
+    
+    print(writersCol)
+    
+    writers = []
+    actors = []
+    producers = []
+    photographers = []
+    montage = []
+    decor = []
+    clothes = []
+    musicians = []
+    directors = []
+    publishers = []
+    
+    for i in range(len(writersCol)):
+        writers += writersCol[i].split(',')
+        
+    print(writers)
+    for i in range(len(actorsCol)):
+        actors += actorsCol[i].split(',')
+        
+    for i in range(len(producersCol)):
+        producers += producersCol[i].split(',')
+        
+    for i in range(len(photographersCol)):
+        photographers += photographersCol[i].split(',')
+        
+    for i in range(len(montageCol)):
+        montage += montageCol[i].split(',')
+        
+    for i in range(len(decorCol)):
+        decor += decorCol[i].split(',')
+        
+    for i in range(len(clothesCol)):
+        clothes += clothesCol[i].split(',')
+        
+    for i in range(len(musiciansCol)):
+        musicians += musiciansCol[i].split(',')
+        
+    for i in range(len(directorsCol)):
+        directors += directorsCol[i].split(',')
+    
+    for i in range(len(publishersCol)):
+        publishers += publishersCol[i].split(',')
+        
+    names = writers + actors + producers + photographers + montage + decor + clothes + musicians + directors + publishers
+    #names = list(set(names))
+    
+    print(len(names))
+    
+    names = list(filter(None, names))
+    
+    print(len(names))
+    
+    with open('names.txt', 'w', encoding="utf-8") as f:
+        for i in range(len(names)):
+            #if(not(names[i] == '')):
+            f.write(names[i])
+            f.write('\n')
+                
+    '''
+    for name in names:
+        similar_names = process.extract(name, names, limit=3)
+        for tpl in similar_names:
+            if(tpl[1] >= 80 and tpl[1] <= 99):
+                print(name)
+                print(str(tpl[0]) + "     " + str(tpl[1]))
+                print('\n')
+    '''
+    return len(names)
+
