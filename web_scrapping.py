@@ -490,3 +490,40 @@ def get_names():
     '''
     return len(names)
 
+
+def get_synopses():
+    f = open('data.csv', 'r', encoding="utf-8")
+    reader = csv.DictReader(f)
+    columns = defaultdict(list)
+    for row in reader: # read a row as {column1: value1, column2: value2,...}
+        for (k,v) in row.items(): # go over each column name and value 
+            columns[k].append(v) # append the value into the appropriate list
+                                 # based on column name k
+    synopsisCol = columns[' ملخص']
+    movieNameCol = columns['اسم الفيلم']
+    
+    f.close()
+    
+    
+    
+    movie_synopsis_dict = {}
+    
+    print(len(synopsisCol) == len(movieNameCol))
+    print(len(synopsisCol))
+    print(len(movieNameCol))
+    
+    for i in range(len(synopsisCol)):
+        if (movieNameCol[i] != '' and synopsisCol[i] != ''):
+            movie_synopsis_dict[movieNameCol[i]] = synopsisCol[i]
+    
+    #synopses = list(filter(None, synopsisCol))
+    
+    #print('After epsilon filter: ', len(synopses))
+    with open('synopses.txt', 'w', encoding="utf-8") as f:
+        for movie_name, synopsis in movie_synopsis_dict.items():
+            #if(not(names[i] == '')):
+            f.write(movie_name + '||' + synopsis)
+            f.write('\n')
+    
+    return None
+
